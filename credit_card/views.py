@@ -14,6 +14,9 @@ from .utils import (
     get_cc_brand, encrypt_cc_number)
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.pagination import PageNumberPagination
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from drf_yasg.openapi import TYPE_OBJECT
 
 
 class CustomPagination(PageNumberPagination):
@@ -52,6 +55,18 @@ class CreditCardView(APIView):
         credit_card.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['exp_date', 'holder', 'number', 'cvv'],
+            properties={
+                'exp_date': openapi.Schema(type=openapi.TYPE_STRING, format='date', description='Expiration date in MM/YYYY format.'),
+                'holder': openapi.Schema(type=openapi.TYPE_STRING, description='Holder name.'),
+                'number': openapi.Schema(type=openapi.TYPE_STRING, description='Credit card number.'),
+                'cvv': openapi.Schema(type=openapi.TYPE_STRING, description='CVV code.'),
+            }
+        )
+    )
     def post(self, request):
         data = request.data.copy()
         holder = data.get('holder')
