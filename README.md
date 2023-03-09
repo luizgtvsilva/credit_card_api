@@ -104,7 +104,7 @@ Somente um ADMIN pode criar outros usuários, portanto é necessário fazer um l
 
 | Parâmetro   | Tipo       | Exemplo                           |
 | :---------- | :--------- | :---------------------------------- |
-| `body` | `json` | { "name": "worker1", "password": "1234",  "role": "NON-ADMIN" } |
+| `body` | `json` | { "name": "worker1", "password": "1234",  "role": "NON_ADMIN" } |
 
 
 #### Cria um Holder
