@@ -12,7 +12,7 @@ from .utils import (
     get_last_day_of_month,
     is_date_valid, check_if_cc_is_valid,
     get_cc_brand, encrypt_cc_number)
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -23,7 +23,7 @@ class CustomPagination(PageNumberPagination):
 
 
 class CreditCardView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request, pk=None):
         if pk:
@@ -112,7 +112,7 @@ class CreditCardView(APIView):
 
 
 class HolderView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request, pk=None):
         if pk:
