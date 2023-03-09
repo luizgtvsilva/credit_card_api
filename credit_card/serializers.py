@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CreditCard, Holder
+from .models import CreditCard, Holder, User
 
 
 class HolderSerializer(serializers.ModelSerializer):
@@ -16,9 +16,6 @@ class CreditCardSerializer(serializers.ModelSerializer):
         fields = ['id', 'exp_date', 'holder', 'number', 'cvv', 'brand']
 
     def to_representation(self, instance):
-        """
-        Serializes the CreditCard object with Holder name instead of ID for GET requests
-        """
         representation = super().to_representation(instance)
         representation['holder'] = {'id': representation['holder'],
                                     'name': instance.holder.name}
@@ -29,3 +26,15 @@ class CreditCardCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditCard
         fields = ['exp_date', 'holder', 'number', 'cvv', 'brand']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'password', 'role']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create_user(password=password, **validated_data)
+        return user

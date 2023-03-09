@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from credit_card.views import CreditCardView, HolderView
+from credit_card.views import CreditCardView, HolderView, UserCreateView
+from rest_framework.authtoken.views import obtain_auth_token
 
 
 urlpatterns = [
@@ -24,4 +25,6 @@ urlpatterns = [
     path('credit-cards/<int:pk>/', CreditCardView.as_view(), name='credit-card-detail'),
     path('holders/', HolderView.as_view()),
     path('holders/<int:pk>/', HolderView.as_view()),
+    path('sign-up/', UserCreateView.as_view(), name='sign-up'),
+    path('api/token/', obtain_auth_token, name='api_token_auth'),
 ]

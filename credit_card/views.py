@@ -2,12 +2,29 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CreditCard, Holder
-from .serializers import CreditCardCreateSerializer, CreditCardSerializer, HolderSerializer
+from .serializers import (CreditCardCreateSerializer,
+                          CreditCardSerializer,
+                          HolderSerializer,
+                          UserSerializer)
 from django.core.exceptions import ObjectDoesNotExist
-from .utils import is_valid_date_format, get_last_day_of_month, is_date_valid, check_if_cc_is_valid, get_cc_brand, encrypt_cc_number
+from .utils import (
+    is_valid_date_format,
+    get_last_day_of_month,
+    is_date_valid, check_if_cc_is_valid,
+    get_cc_brand, encrypt_cc_number)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class CreditCardView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk=None):
         if pk:
             try:
@@ -19,9 +36,11 @@ class CreditCardView(APIView):
             serializer = CreditCardSerializer(credit_card)
             return Response(serializer.data)
         else:
+            paginator = CustomPagination()
             credit_cards = CreditCard.objects.all()
-            serializer = CreditCardSerializer(credit_cards, many=True)
-            return Response(serializer.data)
+            result_page = paginator.paginate_queryset(credit_cards, request)
+            serializer = CreditCardSerializer(result_page, many=True)
+            return paginator.get_paginated_response(serializer.data)
 
     def put(self, request, pk):
         try:
@@ -64,7 +83,7 @@ class CreditCardView(APIView):
 
         if exp_date:
             if not is_valid_date_format(exp_date):
-                return Response({'error': 'Wrong date format, use MM/YYYY instead.'},
+                return Response({'error': 'Wrong date format, use MM/YYYY.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             elif not is_date_valid(get_last_day_of_month(exp_date)):
@@ -79,7 +98,7 @@ class CreditCardView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
             if not get_cc_brand(cc_number):
-                return Response({'error': 'This Credit Card has a unsupported brand.'},
+                return Response({'error': 'This CC has a invalid brand.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             request.data['brand'] = get_cc_brand(cc_number)
@@ -93,6 +112,8 @@ class CreditCardView(APIView):
 
 
 class HolderView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk=None):
         if pk:
             try:
@@ -137,3 +158,16 @@ class HolderView(APIView):
 
         holder.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserCreateView(APIView):
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                'id': user.id,
+                'name': user.name,
+                'role': user.role,
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
