@@ -1,0 +1,2 @@
+class BrandNotFound(Exception):
+    pass
