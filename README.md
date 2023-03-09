@@ -78,6 +78,20 @@ Inicie o servidor
   python manage.py runserver
 ```
 
+## Testes
+
+
+O projeto conta com uma cobertura de 92% de testes unitários, você pode verificar no arquivo testes.py.
+
+Rode os comandos abaixo para visualizar o relatório:
+```bash
+  coverage run --source='.' manage.py test credit_card
+```
+E logo em seguida rode o comando abaixo e abra o arquivo index.html gerado:
+```bash
+  coverage html
+```
+
 
 ## Documentação da API
 Aqui vou detalhar melhor somente como se utiliza os principais endpoints do projeto, as demais pode ser encontrada em `/swagger` uma vez que o projeto estiver rodando.
