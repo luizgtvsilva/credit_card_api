@@ -14,6 +14,9 @@ class CreditCard(models.Model):
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
     brand = models.CharField(max_length=25)
 
+    def __str__(self):
+        return f'{self.brand} ending with {self.number[-4:]}'
+
 
 class UserRole(models.TextChoices):
     ADMIN = 'ADMIN', 'Admin'

@@ -23,8 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('credit-cards/', CreditCardView.as_view(), name='credit-card-list'),
     path('credit-cards/<int:pk>/', CreditCardView.as_view(), name='credit-card-detail'),
-    path('holders/', HolderView.as_view()),
-    path('holders/<int:pk>/', HolderView.as_view()),
-    path('sign-up/', UserCreateView.as_view(), name='sign-up'),
+    path('holders/', HolderView.as_view(), name='holder-list'),
+    path('holders/<int:pk>/', HolderView.as_view(), name='holder-detail'),
+    path('sign-up/', UserCreateView.as_view(), name='user-create'),
     path('api/token/', obtain_auth_token, name='api_token_auth'),
 ]

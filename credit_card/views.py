@@ -42,21 +42,6 @@ class CreditCardView(APIView):
             serializer = CreditCardSerializer(result_page, many=True)
             return paginator.get_paginated_response(serializer.data)
 
-    def put(self, request, pk):
-        try:
-            credit_card = CreditCard.objects.get(pk=pk)
-        except ObjectDoesNotExist:
-            return Response({'detail': 'Credit Card not found.'},
-                            status=status.HTTP_404_NOT_FOUND)
-
-        serializer = CreditCardCreateSerializer(credit_card, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-
     def delete(self, request, pk):
         try:
             credit_card = CreditCard.objects.get(pk=pk)
@@ -68,9 +53,10 @@ class CreditCardView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def post(self, request):
-        holder = request.data.get('holder')
-        exp_date = request.data.get('exp_date')
-        cc_number = request.data.get('number')
+        data = request.data.copy()
+        holder = data.get('holder')
+        exp_date = data.get('exp_date')
+        cc_number = data.get('number')
 
         if holder:
             try:
@@ -79,7 +65,7 @@ class CreditCardView(APIView):
                 return Response({'error': 'Holder not found.'},
                                 status=status.HTTP_404_NOT_FOUND)
 
-            request.data['holder'] = holder_obj
+            data['holder'] = holder_obj
 
         if exp_date:
             if not is_valid_date_format(exp_date):
@@ -90,7 +76,7 @@ class CreditCardView(APIView):
                 return Response({'error': 'Date expired.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            request.data['exp_date'] = get_last_day_of_month(exp_date)
+            data['exp_date'] = get_last_day_of_month(exp_date)
 
         if cc_number:
             if not check_if_cc_is_valid(cc_number):
@@ -101,13 +87,14 @@ class CreditCardView(APIView):
                 return Response({'error': 'This CC has a invalid brand.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            request.data['brand'] = get_cc_brand(cc_number)
-            request.data['number'] = encrypt_cc_number(cc_number)
+            data['brand'] = get_cc_brand(cc_number)
+            data['number'] = encrypt_cc_number(cc_number)
 
-        serializer = CreditCardCreateSerializer(data=request.data)
+        serializer = CreditCardCreateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(5)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
