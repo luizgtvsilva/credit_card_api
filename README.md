@@ -43,21 +43,27 @@ Entre no diretório do projeto
 Crie um ambiente virtual e depois ative-o
 
 ```bash
-  venv -m env
+  python3 -m venv env
   source env/bin/activate
+```
+
+Instale a biblioteca personalizada de validação de cartoes.
+
+```bash
+pip install git+https://github.com/maistodos/python-creditcard.git@main
 ```
 
 Instale as dependências
 
 ```bash
-  pip install -m requirements.txt
+  pip install -r requirements.txt
 ```
 
 Crie e atualize o banco de dados
 
 ```bash
   python manage.py makemigrations
-  python manage.py migrate
+  python manage.py migrate --run-syncdb
 ```
 
 Crie um usuário Admin

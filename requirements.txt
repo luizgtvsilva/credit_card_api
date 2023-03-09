@@ -6,7 +6,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 coverage==7.2.1
 cryptography==39.0.2
-Django==4.1.7
+django==4.1.7
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-yasg==1.21.5
@@ -18,7 +18,7 @@ MarkupSafe==2.1.2
 packaging==23.0
 pycparser==2.21
 PyJWT==2.6.0
-python-creditcard==0.0.1
+# python-creditcard==0.0.1
 python-dateutil==2.8.2
 pytz==2022.7.1
 requests==2.28.2
