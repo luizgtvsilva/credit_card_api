@@ -4,7 +4,7 @@ from rest_framework import status
 from .models import CreditCard, Holder
 from .serializers import CreditCardCreateSerializer, CreditCardSerializer, HolderSerializer
 from django.core.exceptions import ObjectDoesNotExist
-from .utils import is_valid_date_format, get_last_day_of_month, is_date_valid
+from .utils import is_valid_date_format, get_last_day_of_month, is_date_valid, check_if_cc_is_valid, get_cc_brand, encrypt_cc_number
 
 
 class CreditCardView(APIView):
@@ -51,6 +51,7 @@ class CreditCardView(APIView):
     def post(self, request):
         holder = request.data.get('holder')
         exp_date = request.data.get('exp_date')
+        cc_number = request.data.get('number')
 
         if holder:
             try:
@@ -71,6 +72,18 @@ class CreditCardView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
             request.data['exp_date'] = get_last_day_of_month(exp_date)
+
+        if cc_number:
+            if not check_if_cc_is_valid(cc_number):
+                return Response({'error': 'Credit Card number is not valid.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if not get_cc_brand(cc_number):
+                return Response({'error': 'This Credit Card has a unsupported brand.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            request.data['brand'] = get_cc_brand(cc_number)
+            request.data['number'] = encrypt_cc_number(cc_number)
 
         serializer = CreditCardCreateSerializer(data=request.data)
         if serializer.is_valid():

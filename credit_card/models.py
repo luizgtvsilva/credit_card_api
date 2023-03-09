@@ -8,6 +8,7 @@ class Holder(models.Model):
 
 class CreditCard(models.Model):
     exp_date = models.DateField()
-    number = models.CharField(max_length=16)
-    cvv = models.CharField(max_length=3)
+    number = models.CharField(max_length=255)
+    cvv = models.CharField(max_length=4, validators=[MinLengthValidator(3)])
     holder = models.ForeignKey(Holder, on_delete=models.CASCADE)
+    brand = models.CharField(max_length=25)

@@ -1,8 +1,5 @@
-from django.utils import timezone
-from dateutil import parser
 from rest_framework import serializers
 from .models import CreditCard, Holder
-from datetime import datetime
 
 
 class HolderSerializer(serializers.ModelSerializer):
@@ -16,7 +13,7 @@ class CreditCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CreditCard
-        fields = ['id', 'exp_date', 'holder', 'number', 'cvv']
+        fields = ['id', 'exp_date', 'holder', 'number', 'cvv', 'brand']
 
     def to_representation(self, instance):
         """
@@ -31,4 +28,4 @@ class CreditCardSerializer(serializers.ModelSerializer):
 class CreditCardCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditCard
-        fields = ['exp_date', 'holder', 'number', 'cvv']
+        fields = ['exp_date', 'holder', 'number', 'cvv', 'brand']
